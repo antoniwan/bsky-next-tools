@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 export default function LoginForm() {
   const [identifier, setIdentifier] = useState("");
@@ -65,93 +69,81 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">
-        {isVerifying ? "Verify Your Email" : "Login to BlueSky"}
-      </h2>
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-600">
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="identifier"
-            className="block text-sm font-medium text-gray-700"
-          >
-            {isVerifying ? "Email" : "Username or Email"}
-          </label>
-          <input
-            type="text"
-            id="identifier"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            disabled={isVerifying || countdown !== null}
-            required
-          />
-        </div>
-
-        {isVerifying ? (
-          <div>
-            <label
-              htmlFor="verificationCode"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Verification Code
-            </label>
-            <input
-              type="text"
-              id="verificationCode"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              disabled={countdown !== null}
-              required
-            />
-            <button
-              type="button"
-              onClick={handleBackToLogin}
-              className="mt-2 text-sm text-blue-600 hover:text-blue-500"
-            >
-              Back to Login
-            </button>
-          </div>
-        ) : (
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              disabled={countdown !== null}
-              required
-            />
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <h2 className="text-2xl font-bold text-center">
+          {isVerifying ? "Verify Your Email" : "Login to BlueSky"}
+        </h2>
+      </CardHeader>
+      <CardContent>
+        {error && (
+          <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded text-destructive">
+            {error}
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={countdown !== null}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-        >
-          {countdown !== null
-            ? `Please wait ${countdown}s`
-            : isVerifying
-            ? "Verify"
-            : "Login"}
-        </button>
-      </form>
-    </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="identifier">
+              {isVerifying ? "Email" : "Username or Email"}
+            </Label>
+            <Input
+              type="text"
+              id="identifier"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              disabled={isVerifying || countdown !== null}
+              required
+            />
+          </div>
+
+          {isVerifying ? (
+            <div className="space-y-2">
+              <Label htmlFor="verificationCode">Verification Code</Label>
+              <Input
+                type="text"
+                id="verificationCode"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                disabled={countdown !== null}
+                required
+              />
+              <Button
+                type="button"
+                variant="link"
+                onClick={handleBackToLogin}
+                className="p-0 h-auto"
+              >
+                Back to Login
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={countdown !== null}
+                required
+              />
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={countdown !== null}
+          >
+            {countdown !== null
+              ? `Please wait ${countdown}s`
+              : isVerifying
+              ? "Verify"
+              : "Login"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
