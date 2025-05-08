@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  did           String    @unique
+  handle        String    @unique
+  displayName   String?
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  posts         Post[]
+  likes         Like[]
+  follows       Follow[]  @relation("following")
+  followers     Follow[]  @relation("followers")
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  uri         String    @unique
+  text        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
+  likes       Like[]
+  replies     Reply[]
+  parentReplies Reply[] @relation("ParentPost")
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String
+
+  @@unique([userId, postId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  follower    User     @relation("following", fields: [followerId], references: [id])
+  followerId  String
+  following   User     @relation("followers", fields: [followingId], references: [id])
+  followingId String
+
+  @@unique([followerId, followingId])
+}
+
+model Reply {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  text          String
+  post          Post     @relation(fields: [postId], references: [id])
+  postId        String
+  parentPost    Post     @relation("ParentPost", fields: [parentPostId], references: [id])
+  parentPostId  String   @unique
+}
